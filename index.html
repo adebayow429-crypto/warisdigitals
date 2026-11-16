@@ -267,7 +267,7 @@ header .wrap{height:68px;flex-wrap:nowrap;gap:12px}header .logo{flex:none}header
 </div>
 <form id="f"><h3 style="margin:0">Get a free quote now</h3>
 <input id="n" placeholder="Your name *" required><input id="e" type="email" placeholder="Your email *" required><textarea id="m" rows="4" placeholder="How can I help you? *" required></textarea>
-<button class="btn pri" type="submit">Send Message</button></form>
+<input id="hp" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0"><button class="btn pri" type="submit">Send Message</button><p id="fs" role="status" style="margin:0;font-size:14px;font-weight:600"></p></form>
 </div></section>
 
 <section class="cta"><div class="wrap"><h2>Have a Project in Mind?</h2><p>Let’s build something great together.</p><a class="btn" href="https://wa.me/2347058917124" target="_blank" rel="noopener">Get Started →</a></div></section>
@@ -287,9 +287,16 @@ header .wrap{height:68px;flex-wrap:nowrap;gap:12px}header .logo{flex:none}header
 <script>
 document.getElementById('bg').onclick=function(){document.getElementById('nav').classList.toggle('open')};
 document.querySelectorAll('nav a').forEach(function(a){a.onclick=function(){document.getElementById('nav').classList.remove('open')}});
-document.getElementById('f').onsubmit=function(ev){ev.preventDefault();
+(function(){var f=document.getElementById('f'),st=document.getElementById('fs'),b=f.querySelector('button');
+function mail(n,e,m){var a=document.createElement('a');a.href='mailto:warisadebayo442@gmail.com?subject='+encodeURIComponent('New message from '+n)+'&body='+encodeURIComponent(m+'\n\nName: '+n+'\nEmail: '+e);document.body.appendChild(a);a.click();document.body.removeChild(a)}
+f.onsubmit=function(ev){ev.preventDefault();if(document.getElementById('hp').value)return;
 var n=document.getElementById('n').value,e=document.getElementById('e').value,m=document.getElementById('m').value;
-var a=document.createElement('a');a.href='mailto:warisadebayo442@gmail.com?subject='+encodeURIComponent('New message from '+n)+'&body='+encodeURIComponent(m+'\n\nName: '+n+'\nEmail: '+e);document.body.appendChild(a);a.click();document.body.removeChild(a)};
+b.disabled=true;b.textContent='Sending...';st.textContent='';
+fetch('https://formsubmit.co/ajax/warisadebayo442@gmail.com',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({name:n,email:e,message:m,_subject:'New message from '+n+' (portfolio)',_replyto:e,_template:'table'})})
+.then(function(r){return r.json()})
+.then(function(d){if(d&&(d.success==='true'||d.success===true)){f.reset();st.style.color='#16a34a';st.textContent='Thank you! Your message has been sent.'}else{throw new Error('not sent')}})
+.catch(function(){st.style.color='#dc2626';st.textContent='Could not send right now. Opening your email app instead.';mail(n,e,m)})
+.then(function(){b.disabled=false;b.textContent='Send Message'})};})();
 document.getElementById('pfilter').onclick=function(e){var b=e.target.closest('button');if(!b)return;
 this.querySelectorAll('button').forEach(function(x){x.classList.toggle('on',x===b)});
 document.querySelectorAll('#pfg .pf').forEach(function(c){c.hidden=!(b.dataset.f==='all'||c.dataset.c===b.dataset.f)})};
